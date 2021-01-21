@@ -34,7 +34,7 @@
                 console.log("sendPostMessage - window.opener exist");
                 writeMessage('sendPostMessage ' + msg, JSON.stringify({ openerExist: true }))
                 var date = new Date();
-                window.opener.postMessage(JSON.stringify({ event: 'getStoredToken', params: "Hello - " + new Date() }), "http://localhost:5000/");
+                window.opener.postMessage(JSON.stringify({ event: 'getStoredToken', params: "Hello - " + new Date() }), "https://cobunduroomfinder-dev2.azurewebsites.net/");
                 console.log("sendPostMessage - message sent");
                 writeMessage('sendPostMessage ' + msg , JSON.stringify({ messageSent: true }))
                 // window.close();
