@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        function writeMessage(title, text) {
+            $('#messages').append(
+                $(document.createElement('div')).addClass('message').html('<h2>' + title + '</h2><pre>'+text+'</pre><hr/>')
+            );
+        }
+
+        function initMessageListener () {
+            if (window.addEventListener) {
+                window.addEventListener('message', function (e) {
+                    writeMessage('Message from ' + e.origin, JSON.stringify(e.data));
+                });
+            } else {
+                window.onmessage = function (e) {
+                    writeMessage('Message from ' + e.origin, JSON.stringify(e.data));
+                };
+            }
+
+            writeMessage('Message listener added', JSON.stringify({ compleat: true }));
+        }
+
+        function sendPostMessage(msg) {
+            //window.open('https://staging.cobundu.com/saml/initmobile/mcsdev4.ik?mobileclient=webbrowser&mobileurl=https://consumer-lgn.web.app/', '_blank', "width=1600,height=900");
+            writeMessage('sendPostMessage '+msg, JSON.stringify({ methodCalled: true }))
+            if (window.opener) {
+                console.log("sendPostMessage - window.opener exist");
+                writeMessage('sendPostMessage ' + msg, JSON.stringify({ openerExist: true }))
+                var date = new Date();
+                window.opener.postMessage(JSON.stringify({ event: 'getStoredToken', params: "Hello - " + new Date() }), "http://localhost:5000/");
+                console.log("sendPostMessage - message sent");
+                writeMessage('sendPostMessage ' + msg , JSON.stringify({ messageSent: true }))
+                // window.close();
+            }
+            else{
+                console.log("sendPostMessage - window.opener doesn't exist"); 
+                writeMessage('sendPostMessage ' + msg, JSON.stringify({ openerExist: false }))               
+            }
+        }
+
+        function startProcedure() {
+            initMessageListener();
+            sendPostMessage(":Attempt - 1");
+            setTimeout(function () {
+                //writeMessage('Procedure complete', JSON.stringify({ compleat: true }))
+                sendPostMessage(":Attempt - 2");
+            }, 1000)
+        }
+
+        $(document).ready(startProcedure);
+
+    </script>
+</head>
+<body>
+    <h1>Consumer v6</h1>
+    <div id="messages"></div>
+</body>
+</html>
+
+
+
+<!-- <html>
+
+<head>
+    <title>Spacewell</title>
+    <script>
+        var event = null;
+        window.addEventListener('message', function(a) {
+            event = a;
+            console.log('message received from room finder');
+            console.log(a);
+            a.source.postMessage("Hi, This message is from Local HTML file",
+                event.origin);
+                sendMessage();
+        });
+
+        function sendMessage(){
+            if(event){
+                console.log("event exist");
+                event.source.postMessage("Its working. This message is from target host",
+                event.origin);
+                console.log(event.origin);
+            }
+            else{
+                console.log("event scope doesn't exist");
+                window.postMessage("Hello", "http://localhost:5000/");
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <p>
+        This is new stand alone page
+    </p>
+    <button onclick="sendMessage()">Send explicit message</button>
+</body>
+
+</html> -->
